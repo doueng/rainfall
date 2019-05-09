@@ -1,0 +1,23 @@
+#######
+####### CMDS ###########
+./level0 423
+cat /home/user/level1/.pass
+########################
+
+# Run program under gdb
+gdb level0
+# Start program with r
+r
+# This reults in a segfault
+# Disassemble the main to see what is going on
+disas *main
+# First function call is atoi
+# 0x08048ed4 <+20>:    call   0x8049710 <atoi>
+# which will segfault if not given any arguments.
+# On the line after there is a cmp with the res from atoi.
+# 0x08048ed9 <+25>:    cmp    eax,0x1a7
+# Try running with 423 (0x1a7) as an argument.
+# Voila we are in a shell running as level1
+# Now just run cat /home/user/level1/.pass
+# and we have our password for level1
+

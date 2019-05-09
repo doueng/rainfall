@@ -1,0 +1,22 @@
+int n()
+{
+	char padd[0x18];
+	return (system("/bin/cat /home/user/level7/.pass"));
+}
+
+int m()
+{
+	char padd[0x18];
+	return (puts("Nope"));
+}
+
+int main(int argc, char *argv[])
+{
+	int (*first) (void);
+	int (*second) (void);
+	first = malloc(0x40);
+	second = malloc(0x4);
+	second = m;
+	strcpy(first, *(argv + 1));
+	return (second());
+}
