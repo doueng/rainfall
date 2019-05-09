@@ -1,0 +1,15 @@
+## Run the level0 binary with 423(0x1a7) as an argument so it can run atoi
+## without a segfault and fail the first if statement.
+## 
+#8048ed4:       e8 37 08 00 00          call   8049710 <atoi>
+#8048ed9:       3d a7 01 00 00          cmp    eax,0x1a7
+#8048ede:       75 78                   jne    8048f58 <main+0x98>
+#
+## Later on an execve call will grant a /bin/bash for you to
+## cat the pass from level1's home folder. This works because
+## the level0 has its sticky bit set.
+## Use objdump -Mintel -d ~/level0 | grep -A20 '<main'
+## on the level0 binary to see the disassembled main function.
+
+~/level0 423
+cat /home/user/level1/.pass

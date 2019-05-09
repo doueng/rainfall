@@ -1,0 +1,34 @@
+
+void	p(char *buf, char *format)
+{
+	char	*ptr;
+	char	tmp[0x1000];
+
+	puts(format);
+	read(0, tmp, 0x1000);
+	ptr = strchr(tmp, '\n');
+	*ptr = '\0';
+	strncpy(buf, tmp, 20);
+}
+
+char	*pp(char *dst)
+{
+	char	buf1[20];
+	char	buf2[20];
+
+	p(buf1, " - ");
+	p(buf2, " - ");
+	strcpy(dst, buf1);
+	dst[strlen(dst)] = ' ';
+	strcat(dst, buf2);
+	return (dst);
+}
+
+int		main(void)
+{
+	char	buf[20];
+
+	pp(buf);
+	puts(buf);
+	return (0);
+}

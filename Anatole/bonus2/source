@@ -1,0 +1,56 @@
+
+int		language = 0;
+
+void	greetuser(char *src)
+{
+	char	buf[64];
+
+	if (language == 1)
+	{
+		buf = "Hyvää päivää ";
+	}
+	if (language == 2)
+	{
+		buf = "Goedemiddag! ";
+	}
+	if (language == 0)
+	{
+		buf = "Hello ";
+	}
+	strcat(buf, src);
+	puts(buf);
+}
+
+SF: a0 - 160
+int		main(int argc, char **argv)
+{
+	int		*wtf;
+	char	buf1[40];
+	char	buf2[32];
+	char	*lang;
+
+	for (int i = 0 ; i < 19; i++)
+	{
+		buf1[i] = 0;
+	}
+	if (argc == 3)
+	{
+		strncpy(buf1, argv[1], 40);
+		strncpy(buf2, argv[2], 32);
+		lang = getenv("LANG");
+		if (lang != NULL)
+		{
+			if (memcmp(lang, "fi", 2))
+				language = 1;
+			if (memcmp(lang, "nl", 2))
+				language = 2;
+			for (int i = 0; i < 19; i++)
+				wtf[i] = buf[(i*4)]
+				       + (buf[(i*4)+1] << 8)
+					   + (buf[(i*4)+2] << 16)
+					   + (buf[(i*4)+3] << 24);
+			greetuser((char *)wtf);
+		}
+	}
+	return (1);
+}

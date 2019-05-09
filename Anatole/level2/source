@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+
+char	*p(void)
+{
+	char	buf[76];
+
+	fflush(stdout);
+	if ( (((void *)(buf + 64)) & 0xb0000000) == 0xb0000000 )
+	{
+		printf("(%p)\n", ((void *)(buf + 64)));
+		_exit(1);
+	}
+	puts(buf);
+	return strdup(buf);
+}
+
+int		main(void)
+{
+	p();
+}

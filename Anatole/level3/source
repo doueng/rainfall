@@ -1,0 +1,20 @@
+
+int  m;
+
+void v(void)
+{
+	char	buf[0x208];
+
+	fgets(buf, 0x200, stdin);
+	printf(buf);
+	if (m == 64)
+	{
+		fwrite("Wait what?!\n", 0x1, 0xc, stdout);
+		system("/bin/sh");
+	}
+}
+
+int  main(void)
+{
+	v();
+}
