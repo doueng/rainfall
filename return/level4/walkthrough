@@ -1,0 +1,31 @@
+
+nm:
+08049810 B m
+080484a7 T main
+08048457 T n
+08048444 T p
+
+Like in the previous level, the binary has a format string weakness.
+It contains a global interger as well.
+
+This time the printf and the fgets are in different functions
+so the stack offset from printf call to the buffer is bigger.
+Also, m is compared to 0x01025544 which is considerably larger than
+the 0x208 buffer at our disposal.
+
+The trick is to make printf generate a large number of characters.
+Outputing 0x01025544 character (~16M) is very long (3-4 min)
+so we are going to use %hn instead of %n.
+Also we are going to use %***x for outputing *** chars,
+and, %**$hn to select the ** arg in varargs.
+
+%hn  -> writes a short (16bit) interger
+%*x  -> writes x with a padding of *
+%*$x -> selects * arg
+
+Since we are only writing on 2 bytes we will need to write on <m+2>
+to reach the more significant bytes of m.
+
+Thus:
+print "\x12\x98\x04\x08\x10\x98\x04\x08" + "%250x%12$hn%21570x%13$hn"
+#> cat <(python format.py) | ./level4

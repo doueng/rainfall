@@ -1,0 +1,31 @@
+
+char    *c = NULL;
+
+void    m(void)
+{
+	printf("%s - %d\n", c, time(0));
+}
+
+int     main(int argc, char **argv)
+{
+	char	**p1, **p2;
+	char    *s1, *s2;
+
+	p1 = (char **)malloc(sizeof(char *) * 2);
+	p2 = (char **)malloc(sizeof(char *) * 2);
+	s1 = (char *)malloc(sizeof(char) * 8);
+	s2 = (char *)malloc(sizeof(char) * 8);
+
+	p1[0] = (char *)1;
+	p1[1] = s1;
+
+	p2[0] = (char *)2;
+	p2[1] = s2;
+
+	strcpy(p1[1], argv[1]);
+	strcpy(p2[1], argv[2]);
+	fd = fopen("/home/user/level8/.pass", "r");
+	fgets(c, 0x44, fd);
+	puts("~~");
+}
+

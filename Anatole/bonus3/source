@@ -1,0 +1,26 @@
+
+int		main(int argc, char **argv)
+{
+	char	buf[132];
+	int		fd;
+
+	fd = fopen("/home/user/end/.pass", "r");
+	for (int i = 0; i < 132; i++)
+	{
+		buf[i] = 0;
+	}
+	if (fd != 0 && argc == 2)
+	{
+		fread(buf, 1, 66, fd);
+		buf[65] = 0;
+		buf[atoi(argv[1])] = 0;
+		fread((buf + 66), 1, 65, fd);
+		close(fd);
+		if (!strcmp(buf, argv[1]))
+			execl("/bin/sh", "sh", NULL);
+		puts(buf + 66);
+		return (0);
+	}
+	return (-1);
+}
+

