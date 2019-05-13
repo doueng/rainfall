@@ -23,7 +23,7 @@ The trick is to get n*4 == 44 without n > 9
 We are going to overflow n to make a negative interger
 become a positive interger by droping it's sign bit.
 
-n = -11 + (1 << 32) = -2147483637
+n = (1 << 31) + 11 = -2147483637
 
 Thus:
 number = "-2147483637"

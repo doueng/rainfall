@@ -19,13 +19,13 @@ Apparently there is something to do with the heap:
 	- malloc
 	- globals
 
-Looking at the assembly we can se the binary is testing for input.
+Looking at the assembly we can see the binary is testing for input.
 "auth " | "reset" | "servic" | "login"
 
-"auth"   -> malloc(4) on auth then strcpy the input buffer in it
-            if the buffer is smaller than 30 bits.
-"servic" -> strdup(input_buffer) in global service
-"login"  -> if auth[32] != NULL opens up a /bin/sh
+"auth"    -> malloc(4) on auth then strcpy the input buffer in it
+            if the buffer is smaller than 30 bytes.
+"service" -> strdup(input_buffer) in global service
+"login"   -> if auth[32] != NULL opens up a /bin/sh
 
 Since subsequent mallocs follow each other in the memory you just have
 to malloc auth first.

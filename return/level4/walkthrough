@@ -1,5 +1,5 @@
 
-nm:
+#> nm
 08049810 B m
 080484a7 T main
 08048457 T n
@@ -14,8 +14,8 @@ Also, m is compared to 0x01025544 which is considerably larger than
 the 0x208 buffer at our disposal.
 
 The trick is to make printf generate a large number of characters.
-Outputing 0x01025544 character (~16M) is very long (3-4 min)
-so we are going to use %hn instead of %n.
+Outputing 0x01025544 character (~16M) takes too long
+so we are going to use %hn instead of %n. ("h" for short)
 Also we are going to use %***x for outputing *** chars,
 and, %**$hn to select the ** arg in varargs.
 

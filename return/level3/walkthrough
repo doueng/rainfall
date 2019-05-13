@@ -24,8 +24,9 @@ printf implicitly fetches them on the stack.
 We can explore the stack on to our input buffer.
 
 One of printf flags writes in a given address.
+%**x -> will print out ** padding characters
 %n   -> will write the number of characters printed so far.
-%.0s -> will discard vararg
+%*$n -> will select the * vararg
 We have to ouput 0x40 characters then use %n on &m to succeed.
 
 Thus:
